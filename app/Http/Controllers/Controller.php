@@ -64,7 +64,7 @@ class Controller extends BaseController
             $data->move($path,$filename);
             // $data->move(public_path(),$filename);
 
-            $script = "cp /images/raw/".$filename." ".$name_only.".".$converto;
+            $script = "sudo cp /images/raw/".$filename." ".$name_only.".".$converto;
             // dd($script);
             $output = shell_exec($script);
             $url = asset($filename);
