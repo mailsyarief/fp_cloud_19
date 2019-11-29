@@ -9,11 +9,31 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Routing\Controller as BaseController;
-
+use App\User;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+    private function tokenValidator($token){
+
+    }
+
+
+    private function validateToken($token){
+        $user = User::where('api_token',$token)->first();
+        if($user != null){
+            return 1;
+        }else{
+            return 0;
+        }
+    }
+
+    public function download($token, $data){
+        validateToken($token);
+        $path = base64_decode($data);
+        return response()->download($path);
+    }
 
     public function convert(Request $request){
 
@@ -26,20 +46,15 @@ class Controller extends BaseController
             $converto = $request->input('to');
             $data = $request->file('file');
             $filename = time().$data->getClientOriginalName();
-            $path = public_path().'/images';
+            $path = public_path().'/images/raw';
             $data->move($path,$filename);
 
-            $script = public_path()."\sh convert.sh ".$filename." ".$converto;
-            // dd($script);
-            $process = new Process($script);
-            $process->run();
+            $script = "python convert.py ".$filename." ".$converto;
+            $output = shell_exec('ls -lart');
 
-            // executes after the command finishes
-            if (!$process->isSuccessful()) {
-                throw new ProcessFailedException($process);
-            }
+            $ip = $_SERVER['SERVER_NAME'];
             
-            // echo $process->getOutput();
+
 
             return response($this->setHttpResponse($process->getOutput()), 200);
         }else{
@@ -47,12 +62,16 @@ class Controller extends BaseController
         }
     }
 
-    private function setHttpResponse($msg){
-        $arr = [
-            'message' => $msg
-        ];
-        return json_encode($arr);
+
+    public function responseDownload(){
+        $filename = public_path()."\images"."\\test.png";
+        // dd($filename);
+        // return $filename;
+        return response()->download($filename);
     }
 
+    public function pwd(){
+        return $output = shell_exec('pwd');
+    }
 
 }
