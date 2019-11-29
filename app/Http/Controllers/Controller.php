@@ -37,7 +37,7 @@ class Controller extends BaseController
         // dd($json);
         if($local == $json->origin){
             // dd($json);
-            $img = public_path()."\\".$json->onlyname.".".$json->to;
+            $img = public_path()."/".$json->onlyname.".".$json->to;
             return response()->download($img)->deleteFileAfterSend(true);
         }else{
 
@@ -60,13 +60,16 @@ class Controller extends BaseController
             $filename = time().$data->getClientOriginalName();
             $name_only = pathinfo($filename,PATHINFO_FILENAME);
             // dd($name_only);
-            $path = public_path().'/images/raw';
+            $path = public_path();
             $data->move($path,$filename);
             // $data->move(public_path(),$filename);
 
-            $script = "sudo cp /images/raw/".$filename." ".$name_only.".".$converto;
-            // dd($script);
-            $output = shell_exec($script);
+            //$script = "sudo cp ".$filename." ".$name_only.".".$converto;
+            //dd($script);
+	    //$script = "";
+            //$output = exec($script);
+            //dd($output);
+	    copy($filename, $name_only.".".$converto);
             $url = asset($filename);
 
             $data = [   
