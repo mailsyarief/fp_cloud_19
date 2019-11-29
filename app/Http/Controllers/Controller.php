@@ -70,6 +70,7 @@ class Controller extends BaseController
             //$output = exec($script);
             //dd($output);
 	    copy($filename, $name_only.".".$converto);
+            unlink($filename);
             $url = asset($filename);
 
             $data = [   
