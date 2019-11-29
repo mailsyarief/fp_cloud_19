@@ -30,15 +30,27 @@ class Controller extends BaseController
     }
 
     public function download($token, $data){
-        validateToken($token);
-        $path = base64_decode($data);
-        return response()->download($path);
+
+        $str = base64_decode($data);
+        $json = json_decode($str);
+        $local = url('/');
+        // dd($json);
+        if($local == $json->origin){
+            // dd($json);
+            $img = public_path()."\\".$json->onlyname.".".$json->to;
+            return response()->download($img)->deleteFileAfterSend(true);
+        }else{
+
+            $img = $json->filename;
+            file_put_contents($img, file_get_contents($json->url));    
+            return response()->download($img)->deleteFileAfterSend(true);        
+        }
     }
 
     public function convert(Request $request){
 
         if($request->file() == null && $request->to == null){
-            return response($this->setHttpResponse('Parameter Error'), 204);
+            
         }
         
         if(count($request->file()) > 0 ){
@@ -46,28 +58,43 @@ class Controller extends BaseController
             $converto = $request->input('to');
             $data = $request->file('file');
             $filename = time().$data->getClientOriginalName();
+            $name_only = pathinfo($filename,PATHINFO_FILENAME);
+            // dd($name_only);
             $path = public_path().'/images/raw';
             $data->move($path,$filename);
+            // $data->move(public_path(),$filename);
 
-            $script = "python convert.py ".$filename." ".$converto;
-            $output = shell_exec('ls -lart');
+            $script = "cp /images/raw/".$filename." ".$name_only.".".$converto;
+            dd($script);
+            // $output = shell_exec('ls -lart');
+            $url = asset($filename);
 
-            $ip = $_SERVER['SERVER_NAME'];
+            $data = [   
+                "origin" => url('/'),
+                "url" => $url,
+                "filename" => $filename,
+                "onlyname" => $name_only,
+                "to" => $request->to
+            ];
+
+            $json =  json_encode($data);            
+            $base = base64_encode($json);
+            $link = url('/')."/".$request->api_token."/".$base;
+            return json_encode($link);
             
-
-
-            return response($this->setHttpResponse($process->getOutput()), 200);
         }else{
-            return response($this->setHttpResponse('Parameter Error'), 204);
+            
         }
     }
 
 
-    public function responseDownload(){
-        $filename = public_path()."\images"."\\test.png";
-        // dd($filename);
-        // return $filename;
-        return response()->download($filename);
+    public function responseDownload($str){
+        $str = base64_decode($str);
+        $str = "http://localhost:1234/images/test.png";
+        $img = 'temp.png';
+        file_put_contents($img, file_get_contents($str));
+
+        return response()->download($img)->deleteFileAfterSend(true);
     }
 
     public function pwd(){

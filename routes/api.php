@@ -18,5 +18,5 @@ use Illuminate\Http\Request;
 // });
 
 Route::post('convert','Controller@convert');
-Route::post('test','Controller@responseDownload');
+// Route::get('test','Controller@responseDownload');
 Route::get('pwd','Controller@pwd');
