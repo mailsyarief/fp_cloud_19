@@ -50,7 +50,13 @@ class Controller extends BaseController
 
     public function convert(Request $request){
 
-        $this->validateToken($request->api_token);
+        $user = User::where('api_token',$request->api_token)->first();
+        if($user != null){
+            
+        }else{
+            return json_encode("TOKEN INVALID");
+            exit();
+        }
 
         if($request->file() == null && $request->to == null){
             
