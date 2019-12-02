@@ -25,7 +25,7 @@ class Controller extends BaseController
         if($user != null){
             return 1;
         }else{
-            return 0;
+            return json_encode("TOKEN INVALID");
         }
     }
 
@@ -48,6 +48,8 @@ class Controller extends BaseController
     }
 
     public function convert(Request $request){
+
+        $this->validateToken($request->api_token);
 
         if($request->file() == null && $request->to == null){
             
