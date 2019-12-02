@@ -26,6 +26,7 @@ class Controller extends BaseController
             return 1;
         }else{
             return json_encode("TOKEN INVALID");
+            exit();
         }
     }
 
