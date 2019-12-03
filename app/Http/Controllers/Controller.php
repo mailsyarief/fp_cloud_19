@@ -35,7 +35,7 @@ class Controller extends BaseController
         $json = json_decode($str);
         $local = url('/');
         // dd($json);
-        if($local == $json->origin){
+        if($_ENV['MACHINE_AP'] == $json->origin){
             // dd($json);
             $img = public_path()."/".$json->onlyname.".".$json->to;
             return response()->download($img)->deleteFileAfterSend(true);
@@ -74,7 +74,7 @@ class Controller extends BaseController
             $url = asset($filename);
 
             $data = [   
-                "origin" => url('/'),
+                "origin" => $_ENV['MACHINE_IP'],
                 "url" => $url,
                 "filename" => $filename,
                 "onlyname" => $name_only,
@@ -84,7 +84,7 @@ class Controller extends BaseController
             $json =  json_encode($data);            
             $base = base64_encode($json);
             $link = url('/')."/".$request->api_token."/".$base;
-            return json_encode($link);
+            return json_encode($data);
             
         }else{
             
