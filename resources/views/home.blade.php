@@ -22,8 +22,36 @@
                         Your Token : <strong>{{Auth::user()->api_token}}</strong>
                     @endif
                 </div>
+                <form id="formId" method="POST">
+                    <input class="form-control" type="text" name="api_token" value="{{Auth::user()->api_token}}" readonly>
+                    <input class="form-control" type="text" name="to" value="png">
+                    <input class="form-control" type="file" name="file" readonly>
+                    <button class="btn btn-xs" type="submit">Submit</button>  
+                </form>
+                <div id="link">
+
+                </div>
             </div>
         </div>
     </div>
 </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+$( '#formId' )
+  .submit( function( e ) {
+    $.ajax( {
+      url: 'http://localhost:8000/api/convert',
+      type: 'POST',
+      data: new FormData( this ),
+      processData: false,
+      contentType: false,
+      success:function(data){
+
+          url = "<a href='"+JSON.parse(data)+"'>donlot</a>";
+          $('#link').html(url)
+      }
+    } );
+    e.preventDefault();
+  } );
+</script>
 @endsection

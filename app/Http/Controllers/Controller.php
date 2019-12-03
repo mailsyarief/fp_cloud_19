@@ -25,7 +25,8 @@ class Controller extends BaseController
         if($user != null){
             return 1;
         }else{
-            return 0;
+            return json_encode("TOKEN INVALID");
+            exit();
         }
     }
 
@@ -48,6 +49,14 @@ class Controller extends BaseController
     }
 
     public function convert(Request $request){
+
+        $user = User::where('api_token',$request->api_token)->first();
+        if($user != null){
+            
+        }else{
+            return json_encode("TOKEN INVALID");
+            exit();
+        }
 
         if($request->file() == null && $request->to == null){
             
